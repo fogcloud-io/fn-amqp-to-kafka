@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"sync/atomic"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	consumer "github.com/fogcloud-io/fog-amqp-consumer"
@@ -22,7 +21,6 @@ var (
 	KAFKA_TOPIC = os.Getenv("KAFKA_TOPIC")
 
 	producer *kafka.Producer
-	msgCnt   int64
 )
 
 func init() {
@@ -54,8 +52,5 @@ func saveMsgToKafka(msg []byte) {
 		},
 		nil,
 	)
-	atomic.AddInt64(&msgCnt, 1)
-	if msgCnt%10 == 0 {
-		producer.Flush(10 * 1000)
-	}
+	producer.Flush(10 * 1000)
 }
